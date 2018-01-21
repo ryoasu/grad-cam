@@ -72,10 +72,7 @@ def image_to_arr(path, shape):
     ```
 **Output grad-cam image**
 
-<img src=./assets/grad_cam-vgg16-chimpanzee.png width=200>
-<img src=./assets/grad_cam-vgg16-elephant.png width=200>
-<img src=./assets/grad_cam-vgg16-lesser_panda.png width=200>
-<img src=./assets/grad_cam-vgg16-macaw.png width=200>
+<img src=./assets/grad_cam-vgg16-chimpanzee.png width=200> <img src=./assets/grad_cam-vgg16-elephant.png width=200> <img src=./assets/grad_cam-vgg16-lesser_panda.png width=200> <img src=./assets/grad_cam-vgg16-macaw.png width=200>
 
 
 ## References
