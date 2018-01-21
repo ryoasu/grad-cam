@@ -1,0 +1,10 @@
+keras:
+  target:
+    architecture: ./example/model/vgg16.yml
+    params: ./example/model/vgg16_weights_tf_dim_ordering_tf_kernels.h5
+    layer: block5_conv3
+    image:
+      path: ./example/images/chimpanzee.png
+    preprocessing:
+      source: ./example/preprocessing.py
+      function: image_to_arr
