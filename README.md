@@ -3,6 +3,14 @@ Grad-CAM (Gradient-weighted Class Activation Mapping)
 
 The paper: https://arxiv.org/pdf/1610.02391v1.pdf
 
+**Input images**
+
+<img src=./example/images/chimpanzee.png width=200> <img src=./example/images/elephant.png width=200> <img src=./example/images/lesser_panda.png width=200> <img src=./example/images/macaw.png width=200>
+
+**grad-cam images**
+
+<img src=./assets/grad_cam-vgg16-chimpanzee.png width=200> <img src=./assets/grad_cam-vgg16-elephant.png width=200> <img src=./assets/grad_cam-vgg16-lesser_panda.png width=200> <img src=./assets/grad_cam-vgg16-macaw.png width=200>
+
 ## Requirement
 - Python (3.6.3)
     - Keras (2.0.9)
@@ -18,22 +26,22 @@ The paper: https://arxiv.org/pdf/1610.02391v1.pdf
 ```yaml
 # Use Library name
 keras:
-  target:
+  model:
     # [optional] path to model architecture file (e.g. keras: *.json or *.yml)
     architecture: path/to/architecture_file.yml
     # path to model params (weight) file (e.g. keras: *.h5)
     params: path/to/params_file.h5
     # target layer name for grad-cam
-    layer: conv_layer
-    image:
-      # path to image (*.jpg or *.png)
-      path: path/to/image.jpg
+    layer: block5_conv3
+  image:
+    # path to image (*.jpg or *.png)
+    path: ./example/images/chimpanzee.png
     # [optional] image preprocessing
-    preprocessing:
+    source:
       # path to image preprocessing module (source file)
-      source: path/to/preprocessing.py
-      # function name (defined in image preprocessing source file)
-      function: image_to_arr
+      path: ./example/src/preprocessing.py
+      # definition (defined in image preprocessing source file)
+      definition: image_to_arr
 
 ```
 
@@ -58,6 +66,35 @@ def image_to_arr(path, shape):
     return x
 ```
 
+### When model architecture is defined in source code
+You can load the model architecture from a `class` or `user-defined function` (python source code) in which the model is defined.
+
+#### usage
+Specify the class name or user-defined function name in which source file and model are defined in config (yaml).
+
+※ 
+`source code` and `architecutre file` can not be specified at the same time.
+```yaml
+keras:
+  model:
+    source:
+      # path source code
+      path: ./example/src/vgg16.py
+      # name of the class or user-defined function
+      definition: definition_name
+      args:
+        - arg1 # first argument of definition
+        - arg2 # second argument of definition
+        - arg3 # third argument of definition
+    params: ./example/model/vgg16_weights_tf_dim_ordering_tf_kernels.h5
+    layer: block5_conv3
+```
+
+
+examples of model defined [python source code](example/src/vgg16.py)
+
+
+
 ## Example
 1. Download model params file for ***imagenet***
     ```sh
@@ -70,10 +107,6 @@ def image_to_arr(path, shape):
     # ./grad-cam
     python3 grad_cam ./example/config.yml
     ```
-**Output grad-cam image**
-
-<img src=./assets/grad_cam-vgg16-chimpanzee.png width=200> <img src=./assets/grad_cam-vgg16-elephant.png width=200> <img src=./assets/grad_cam-vgg16-lesser_panda.png width=200> <img src=./assets/grad_cam-vgg16-macaw.png width=200>
-
 
 ## References
 - Torch implementation by the paper authors: https://github.com/ramprs/grad-cam
