@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import types
 
 from PIL import Image
 from keras.preprocessing import image
 from keras.layers.core import Lambda
+from keras.engine.training import Model
 import keras.backend as K
 import keras.models as models
 import numpy as np
@@ -23,21 +25,25 @@ def __load_image(path, size, preprocess=False):
     return img_arr
 
 
-def get_model(weight_path, architecture_path=None):
-    def load_architecture(path):
-        with open(path) as file:
+def get_model(weight_path, architecture=None):
+    def load_architecture(architecture):
+        with open(architecture) as file:
             model_str = file.read()
         # for json file
-        if os.path.splitext(path)[-1] == '.json':
+        if os.path.splitext(architecture)[-1] == '.json':
             return models.model_from_json(model_str)
         # for yml file
         else:
-            return models.model_from_yaml(model_str)
-
-    if architecture_path is None:
+            return models.model_from_yaml(model_str)    
+    
+    if isinstance(architecture, Model):
+        architecture.summary()
+        architecture.load_weights(weight_path)
+        return architecture
+    elif architecture is None:
         return models.load_model(weight_path)
     else:
-        model = load_architecture(architecture_path)
+        model = load_architecture(architecture)
         model.load_weights(weight_path)
         return model
 

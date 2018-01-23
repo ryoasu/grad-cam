@@ -7,16 +7,36 @@ class Config:
         with open(config_path) as f:
            config = yaml.load(f)
         self.framework = list(config.keys())[0]
-        self.target = Target(config[self.framework]['target'])
+        self.model = Model(config[self.framework]['model'])
+        self.image = Image(config[self.framework]['image'])
 
-class Target:
-    def __init__(self, target_dict):
-        self.params = target_dict['params']
-        self.layer = target_dict['layer']
-        self.image = target_dict['image']
+class Model:
+    def __init__(self, model_dict):
+        self.params = model_dict['params']
+        self.layer = model_dict['layer']
         self.architecture = None
-        if 'architecture' in target_dict.keys():
-            self.architecture = target_dict['architecture']
-        self.preprocessing = None
-        if 'preprocessing' in target_dict.keys():
-            self.preprocessing = target_dict['preprocessing']
+        if 'architecture' in model_dict.keys():
+            self.architecture = model_dict['architecture']
+        self.source = None
+        if 'source' in model_dict.keys():
+            self.source = Source(model_dict['source'])
+
+        # check describe only one of architecture and source in config
+        self.__check()
+
+    def __check(self):
+        message = 'Please describe only one of architecture and source in config'
+        assert (self.architecture is None) != (self.source is None), message
+
+class Image:
+    def __init__(self, image_dict):
+        self.path = image_dict['path']
+        self.source = Source(image_dict['source'])
+
+class Source:
+    def __init__(self, source_dict):
+        self.path = source_dict['path']
+        self.definition = source_dict['definition']
+        self.args = []
+        if 'args' in source_dict.keys():
+            self.args = source_dict['args']

@@ -33,35 +33,50 @@ def __get_filename(path):
     return os.path.splitext(os.path.basename(path))
 
 
-def __keras_grad_cam(target):
+def __keras_grad_cam(config):
     # get model for grad-cam
-    if target.architecture is None:
-        model = k_grad_cam.get_model(target.params)
+    if (config.model.architecture is None) != (config.model.source is None):
+        if config.model.architecture is None:
+            # load model definition
+            model_definition = __function_loader(
+                config.model.source.path,
+                config.model.source.definition)
+            # get model from source code
+            model = k_grad_cam.get_model(
+                config.model.params,
+                model_definition(*config.model.source.args))
+        else:
+            # get model from archarchitecture file
+            model = k_grad_cam.get_model(
+                config.model.params,
+                config.model.architecture)
     else:
-        model = k_grad_cam.get_model(target.params, target.architecture)
+        # get model from params file
+        model = k_grad_cam.get_model(config.model.params)
+    
     # show model summary
     model.summary()
 
     # grad-cam
-    if target.preprocessing is None:
+    if config.image.source is None:
         cam, heatmap = k_grad_cam.grad_cam(
             model,
-            target.layer,
-            target.image['path'])
+            config.model.layer,
+            config.image.path)
     else:
         preprocessing_func = __function_loader(
-            target.preprocessing['source'],
-            target.preprocessing['function'])
+            config.image.source.path,
+            config.image.source.definition)
 
         cam, heatmap = k_grad_cam.grad_cam(
             model,
-            target.layer,
-            target.image['path'],
+            config.model.layer,
+            config.image.path,
             preprocessing_func)
 
     # output file
-    img_name, extension = __get_filename(target.image['path'])
-    output_name = 'grad_cam-{0}-{1}{2}'.format(model.name, img_name, extension)
+    img_name, extension = __get_filename(config.image.path)
+    output_name = 'gradcam-{0}-{1}{2}'.format(model.name, img_name, extension)
     cv2.imwrite(output_name, cam)
 
 
@@ -73,7 +88,7 @@ def main():
 
     # for keras
     if conf.framework == 'keras':
-        __keras_grad_cam(conf.target)
+        __keras_grad_cam(conf)
     # Unimplemented
     else:
         print('Unimplemented ' + conf.framework)
