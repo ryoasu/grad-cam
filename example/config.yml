@@ -1,0 +1,17 @@
+keras:
+  model:
+    # architecture: ./example/model/vgg16.yml
+    source:
+      path: ./example/src/vgg16.py
+      definition: vgg16
+      args:
+        - [224, 224] # image_size
+        - 3          # channel
+        - 1000       # classes
+    params: ./example/model/vgg16_weights_tf_dim_ordering_tf_kernels.h5
+    layer: block5_conv3
+  image:
+    path: ./example/images/chimpanzee.png
+    source:
+      path: ./example/src/preprocessing.py
+      definition: image_to_arr
