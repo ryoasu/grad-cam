@@ -20,13 +20,13 @@ class Model:
         self.source = None
         if 'source' in model_dict.keys():
             self.source = Source(model_dict['source'])
-
+            
         # check describe only one of architecture and source in config
         self.__check()
 
     def __check(self):
         message = 'Please describe only one of architecture and source in config'
-        assert (self.architecture is None) != (self.source is None), message
+        assert (self.architecture is None) or (self.source is None), message
 
 class Image:
     def __init__(self, image_dict):
