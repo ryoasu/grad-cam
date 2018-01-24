@@ -31,7 +31,9 @@ class Model:
 class Image:
     def __init__(self, image_dict):
         self.path = image_dict['path']
-        self.source = Source(image_dict['source'])
+        self.source = None
+        if 'source' in image_dict.keys():
+            self.source = Source(image_dict['source'])
 
 class Source:
     def __init__(self, source_dict):
