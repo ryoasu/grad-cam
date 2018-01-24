@@ -11,7 +11,8 @@ keras:
     params: ./example/model/vgg16_weights_tf_dim_ordering_tf_kernels.h5
     layer: block5_conv3
   image:
-    path: ./example/images/chimpanzee.png
+    path: ./example/images/
+    output: ./example/result
     source:
       path: ./example/src/preprocessing.py
       definition: image_to_arr

@@ -3,6 +3,7 @@
 import os
 import types
 
+from tqdm import tqdm
 from PIL import Image
 from keras.preprocessing import image
 from keras.layers.core import Lambda
@@ -112,3 +113,14 @@ def grad_cam(model, target_layer, image_path, preprocessing=None):
     cam = 255 * cam / np.max(cam)
 
     return np.uint8(cam), heatmap
+
+
+def exec(model, target_layer, image_paths, preprocessing=None):
+    result = []
+    tqdm_image_paths = tqdm(image_paths)
+    for image_path in tqdm_image_paths:
+        tqdm_image_paths.set_description('IMAGES: %s' % image_path)
+        result.append(
+            grad_cam(model, target_layer, image_path, preprocessing))
+    
+    return result
