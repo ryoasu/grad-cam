@@ -37,7 +37,6 @@ def get_model(weight_path, architecture=None):
             return models.model_from_yaml(model_str)    
     
     if isinstance(architecture, Model):
-        architecture.summary()
         architecture.load_weights(weight_path)
         return architecture
     elif architecture is None:

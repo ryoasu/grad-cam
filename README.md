@@ -3,11 +3,11 @@ Grad-CAM (Gradient-weighted Class Activation Mapping)
 
 The paper: https://arxiv.org/pdf/1610.02391v1.pdf
 
-**Input images**
+**Input images to imagenet**
 
 <img src=./example/images/chimpanzee.png width=200> <img src=./example/images/elephant.png width=200> <img src=./example/images/lesser_panda.png width=200> <img src=./example/images/macaw.png width=200>
 
-**grad-cam images**
+**Grad-CAM output images**
 
 <img src=./assets/grad_cam-vgg16-chimpanzee.png width=200> <img src=./assets/grad_cam-vgg16-elephant.png width=200> <img src=./assets/grad_cam-vgg16-lesser_panda.png width=200> <img src=./assets/grad_cam-vgg16-macaw.png width=200>
 
@@ -105,7 +105,7 @@ examples of model defined [python source code](example/src/vgg16.py)
 2. Run grad-cam
     ```sh
     # ./grad-cam
-    python3 grad_cam ./example/config.yml
+    python3 grad_cam.py ./example/config.yml
     ```
 
 ## References
