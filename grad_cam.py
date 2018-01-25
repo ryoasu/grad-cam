@@ -97,7 +97,7 @@ def main():
 
     # for keras
     if config.framework == 'keras':
-       results, image_paths, model_name = __keras_grad_cam(config)
+        results, image_paths, model_name = __keras_grad_cam(config)
     # Unimplemented
     else:
         print('Unimplemented ' + config.framework)
