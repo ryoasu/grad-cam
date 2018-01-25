@@ -110,7 +110,7 @@ def main():
         img_name, extension = __get_filename(image_paths[idx])
         target_name =  '%s-%s' % (model_name, config.model.layer)
         img_file_name = '%s%s' % (img_name, extension)
-        output_name = 'gradcam-{0}-{1}-{2}'.format(target_name, img_file_name, extension)
+        output_name = 'gradcam-{0}-{1}'.format(target_name, img_file_name)
         cv2.imwrite(os.path.join(config.image.output, output_name), cam)
 
 
