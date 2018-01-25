@@ -20,28 +20,44 @@ The paper: https://arxiv.org/pdf/1610.02391v1.pdf
     - Pillow (5.0.0)
 
 ## Usage
-`python3 grad_cam path/to/config.yml`
+1. Create config yaml file ([details about config](README.md/grad-cam#config-yaml)) 
+2. Run grad-cam
+  ```
+  > python3 grad_cam path/to/config.yml
+  ```
 
 ### Config (yaml)
 ```yaml
-# Use Library name
+# <Use Library name>
 keras:
   model:
-    # [optional] path to model architecture file (e.g. keras: *.json or *.yml)
+    # <[optional] path to model architecture file (e.g. keras: *.json or *.yml)>
     architecture: path/to/architecture_file.yml
-    # path to model params (weight) file (e.g. keras: *.h5)
+    # <It is also possible to load model architecture from source file.>
+    # source:
+    #   path: ./example/src/vgg16.py
+    #   definition: vgg16
+    #   args:
+    #     - [224, 224] # image_size
+    #     - 3          # channel
+    #     - 1000       # classes
+    # <path to model params (weight) file (e.g. keras: *.h5)>
     params: path/to/params_file.h5
-    # target layer name for grad-cam
-    layer: block5_conv3
+    # <target layer name for grad-cam>
+    layer: layer_name
   image:
-    # path to image (*.jpg or *.png)
-    path: ./example/images/chimpanzee.png
-    # [optional] image preprocessing
+    # <path to image (*.jpg or *.png)>
+    path: path/to/image.png
+    # <If you want to target multiple images, specify the image directory.>
+    # path: path/to/image_dir
+    # <path to output dir>
+    output: path/to/output_dir
+    # <[optional] image preprocessing>
     source:
-      # path to image preprocessing module (source file)
-      path: ./example/src/preprocessing.py
-      # definition (defined in image preprocessing source file)
-      definition: image_to_arr
+      # <path to image preprocessing module (source file)>
+      path: path/to/preprocessing.py
+      # <definition (defined in image preprocessing source file>)
+      definition: definition_name
 
 ```
 
@@ -101,7 +117,6 @@ examples of model defined [python source code](example/src/vgg16.py)
     # ./grad-cam
     wget  https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_tf_dim_ordering_tf_kernels.h5 -P ./example/model
     ```
-3. Modify `./example/config.yml` (default image is `./example/images/chimpanzee.png`)
 2. Run grad-cam
     ```sh
     # ./grad-cam
