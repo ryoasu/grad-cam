@@ -9,7 +9,9 @@ keras:
         - 3          # channel
         - 1000       # classes
     params: ./example/model/vgg16_weights_tf_dim_ordering_tf_kernels.h5
-    layer: block5_conv3
+    layers:
+      - block5_conv3
+      - block4_conv3
   image:
     path: ./example/images/
     output: ./example/result

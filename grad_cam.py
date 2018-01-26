@@ -73,7 +73,7 @@ def __keras_grad_cam(config):
     if config.image.source is None:
         results = k_grad_cam.exec(
             model,
-            config.model.layer,
+            config.model.layers,
             image_paths)
     else:
         preprocessing_func = __function_loader(
@@ -82,7 +82,7 @@ def __keras_grad_cam(config):
 
         results = k_grad_cam.exec(
             model,
-            config.model.layer,
+            config.model.layers,
             image_paths,
             preprocessing_func)
     
@@ -106,12 +106,13 @@ def main():
     if not os.path.isdir(config.image.output):
         os.makedirs(config.image.output)
     # output file
-    for (idx, (cam, heatmap)) in enumerate(results): 
-        img_name, extension = __get_filename(image_paths[idx])
-        target_name =  '%s-%s' % (model_name, config.model.layer)
-        img_file_name = '%s%s' % (img_name, extension)
-        output_name = 'gradcam-{0}-{1}'.format(target_name, img_file_name)
-        cv2.imwrite(os.path.join(config.image.output, output_name), cam)
+    for (layer_idx, layer_results) in enumerate(results):
+        for (cam_idx, (cam, heatmap)) in enumerate(layer_results): 
+            img_name, extension = __get_filename(image_paths[cam_idx])
+            target_name =  '%s-%s' % (model_name, config.model.layers[layer_idx])
+            img_file_name = '%s%s' % (img_name, extension)
+            output_name = 'gradcam-{0}-{1}'.format(target_name, img_file_name)
+            cv2.imwrite(os.path.join(config.image.output, output_name), cam)
 
 
 if __name__ == '__main__':

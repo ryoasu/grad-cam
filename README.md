@@ -25,6 +25,9 @@ The paper: https://arxiv.org/pdf/1610.02391v1.pdf
   ```
   > python3 grad_cam path/to/config.yml
   ```
+**Output file name**
+
+`{model_name}-{layer}-{image_file_name}.{image_file_extension}`
 
 ### Config (yaml)
 ```yaml
@@ -43,8 +46,10 @@ keras:
     #     - 1000       # classes
     # <path to model params (weight) file (e.g. keras: *.h5)>
     params: path/to/params_file.h5
-    # <target layer name for grad-cam>
-    layer: layer_name
+    # <target layers name for grad-cam>
+    layers:
+      - block5_conv3
+      - block4_conv3
   image:
     # <path to image (*.jpg or *.png)>
     path: path/to/image.png

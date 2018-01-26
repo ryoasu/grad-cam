@@ -13,7 +13,7 @@ class Config:
 class Model:
     def __init__(self, model_dict):
         self.params = model_dict['params']
-        self.layer = model_dict['layer']
+        self.layers = model_dict['layers']
         self.architecture = None
         if 'architecture' in model_dict.keys():
             self.architecture = model_dict['architecture']
