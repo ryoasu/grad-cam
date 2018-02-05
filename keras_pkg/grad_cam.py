@@ -115,12 +115,19 @@ def grad_cam(model, target_layer, image_path, preprocessing=None):
     return np.uint8(cam), heatmap
 
 
-def exec(model, target_layer, image_paths, preprocessing=None):
-    result = []
-    tqdm_image_paths = tqdm(image_paths)
-    for image_path in tqdm_image_paths:
-        tqdm_image_paths.set_description('IMAGES: %s' % image_path)
-        result.append(
-            grad_cam(model, target_layer, image_path, preprocessing))
-    
-    return result
+def exec(model, target_layers, image_paths, preprocessing=None):
+    results = []
+    tqdm_target_layers = tqdm(target_layers)
+    for target_layer in tqdm_target_layers:
+        tqdm_target_layers.set_description('LAYERS: %s' % target_layer)
+        
+        layer_results = []
+        tqdm_image_paths = tqdm(image_paths)
+        for image_path in tqdm_image_paths:
+            tqdm_image_paths.set_description('IMAGES: %s' % image_path)
+            layer_results.append(
+                grad_cam(model, target_layer, image_path, preprocessing))
+
+        results.append(layer_results)
+
+    return results
