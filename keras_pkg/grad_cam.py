@@ -77,15 +77,15 @@ def grad_cam(model, target_layer, image_path, preprocessing=None):
     predicted_class = np.argmax(prediction_result)
 
     # Add layers to model for grad-cam (target_model)
-    target_model = models.Sequential()
-    target_model.add(model)
-    nb_classes = target_model.output_shape[-1]
+    nb_classes = model.output_shape[-1]
     loss_layer = lambda x: target_category_loss(x, predicted_class, nb_classes)
-    target_model.add(Lambda(loss_layer, output_shape=lambda x: x))
+    target_model = models.Model(
+        model.input, 
+        Lambda(loss_layer, output_shape=lambda x: x)(model.output))
 
     # implement function for calculate gradient (gradient_function)
     loss = K.sum(target_model.layers[-1].output)
-    conv_output = target_model.layers[0].get_layer(target_layer).output
+    conv_output = target_model.get_layer(target_layer).output
     grads = normalize(K.gradients(loss, conv_output)[0])
     gradient_function = K.function([target_model.layers[0].input],[conv_output, grads])
 

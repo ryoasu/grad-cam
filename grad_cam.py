@@ -8,7 +8,6 @@ import imghdr
 import types
 
 import cv2
-import keras_pkg.grad_cam as k_grad_cam
 from util.config import Config
 
 
@@ -40,6 +39,8 @@ def __get_filename(path):
 
 
 def __keras_grad_cam(config):
+    import keras_pkg.grad_cam as k_grad_cam
+    
     # get model for grad-cam
     if (config.model.architecture is None) != (config.model.source is None):
         if config.model.architecture is None:
