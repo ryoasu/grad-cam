@@ -40,6 +40,7 @@ def __get_filename(path):
 
 def __keras_grad_cam(config):
     import keras_pkg.grad_cam as k_grad_cam
+    import keras_pkg.util as k_util
     
     # get model for grad-cam
     if (config.model.architecture is None) != (config.model.source is None):
@@ -49,17 +50,17 @@ def __keras_grad_cam(config):
                 config.model.source.path,
                 config.model.source.definition)
             # get model from source code
-            model = k_grad_cam.get_model(
+            model = k_util.get_model(
                 config.model.params,
                 model_definition(*config.model.source.args))
         else:
             # get model from archarchitecture file
-            model = k_grad_cam.get_model(
+            model = k_util.get_model(
                 config.model.params,
                 config.model.architecture)
     else:
         # get model from params file
-        model = k_grad_cam.get_model(config.model.params)
+        model = k_util.get_model(config.model.params)
     
     # show model summary
     model.summary()
@@ -72,6 +73,8 @@ def __keras_grad_cam(config):
 
     # grad-cam
     if config.image.source is None:
+        k_util.show_predicted_class(model, image_paths)
+        
         results = k_grad_cam.exec(
             model,
             config.model.layers,
@@ -80,6 +83,8 @@ def __keras_grad_cam(config):
         preprocessing_func = __function_loader(
             config.image.source.path,
             config.image.source.definition)
+
+        k_util.show_predicted_class(model, image_paths, preprocessing_func)
 
         results = k_grad_cam.exec(
             model,
