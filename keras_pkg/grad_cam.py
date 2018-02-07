@@ -80,17 +80,21 @@ def grad_cam(model, target_layer, image_path, preprocessing=None):
 def exec(model, target_layers, image_paths, preprocessing=None):
     # grad-cam for each layers and images
     results = []
-    tqdm_target_layers = tqdm(target_layers)
+    tqdm_target_layers = tqdm(target_layers, leave=False)
     for target_layer in tqdm_target_layers:
         tqdm_target_layers.set_description('LAYERS: %s' % target_layer)
         
         layer_results = []
-        tqdm_image_paths = tqdm(image_paths)
+        tqdm_image_paths = tqdm(image_paths, leave=False)
         for image_path in tqdm_image_paths:
             tqdm_image_paths.set_description('IMAGES: %s' % image_path)
             layer_results.append(
                 grad_cam(model, target_layer, image_path, preprocessing))
 
         results.append(layer_results)
+
+    # close tqdm
+    tqdm_image_paths.close()
+    tqdm_target_layers.close()
 
     return results
