@@ -4,8 +4,8 @@ MAINTAINER ryoasu
 RUN apt-get update && apt-get install -y git
 
 RUN pip3 install \
-    tensorflow==1.4.0 \
-    keras==2.0.9 \
+    tensorflow==1.5.0 \
+    keras==2.1.3 \
     pillow \
     tqdm \
     opencv-python \
