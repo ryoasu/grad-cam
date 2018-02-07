@@ -69,7 +69,7 @@ def __keras_grad_cam(config):
     if os.path.isfile(config.image.path):
         image_paths = [config.image.path]
     else:
-        image_paths = __get_file_path_from_dir(config.image.path, ['jpg', 'png'])
+        image_paths = __get_file_path_from_dir(config.image.path, ['jpeg', 'png'])
 
     # grad-cam
     if config.image.source is None:
