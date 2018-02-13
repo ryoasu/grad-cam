@@ -1,51 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import os
-import types
-
-from tqdm import tqdm
-from PIL import Image
-from keras.preprocessing import image
-from keras.layers.core import Lambda
-from keras.engine.training import Model
+import cv2
 import keras.backend as K
 import keras.models as models
 import numpy as np
 import tensorflow as tf
-import cv2
+from keras.layers.core import Lambda
+from tqdm import tqdm
+
+from keras_pkg import util
 
 # set test phase
 K.set_learning_phase(0)
-
-
-def __load_image(path, size, preprocess=False):
-    img = image.load_img(path, target_size=size)
-    img_arr = image.img_to_array(img)
-    if preprocess:
-        img_arr = img_arr / 255.
-    return img_arr
-
-
-def get_model(weight_path, architecture=None):
-    def load_architecture(architecture):
-        with open(architecture) as file:
-            model_str = file.read()
-        # for json file
-        if os.path.splitext(architecture)[-1] == '.json':
-            return models.model_from_json(model_str)
-        # for yml file
-        else:
-            return models.model_from_yaml(model_str)    
-    
-    if isinstance(architecture, Model):
-        architecture.load_weights(weight_path)
-        return architecture
-    elif architecture is None:
-        return models.load_model(weight_path)
-    else:
-        model = load_architecture(architecture)
-        model.load_weights(weight_path)
-        return model
 
 
 def target_category_loss(x, category_index, nb_classes):
@@ -64,28 +30,24 @@ def relu(x):
 
 
 def grad_cam(model, target_layer, image_path, preprocessing=None):
-    # target image for grad-cam
+    # get image array for prediction
     image_size = model.input_shape[1:-1]
-    if preprocessing is None:
-        preprocessed_image = __load_image(image_path, image_size, preprocess=True)
-    else:
-        preprocessed_image = preprocessing(image_path, image_size)
-    input_image = np.expand_dims(preprocessed_image, axis=0)
+    input_image = util.image_to_array(model, image_path, image_size, preprocessing)
 
     # get prediction result and
     prediction_result = model.predict(input_image)
     predicted_class = np.argmax(prediction_result)
 
     # Add layers to model for grad-cam (target_model)
-    target_model = models.Sequential()
-    target_model.add(model)
-    nb_classes = target_model.output_shape[-1]
+    nb_classes = model.output_shape[-1]
     loss_layer = lambda x: target_category_loss(x, predicted_class, nb_classes)
-    target_model.add(Lambda(loss_layer, output_shape=lambda x: x))
+    target_model = models.Model(
+        model.input, 
+        Lambda(loss_layer, output_shape=lambda x: x)(model.output))
 
     # implement function for calculate gradient (gradient_function)
     loss = K.sum(target_model.layers[-1].output)
-    conv_output = target_model.layers[0].get_layer(target_layer).output
+    conv_output = target_model.get_layer(target_layer).output
     grads = normalize(K.gradients(loss, conv_output)[0])
     gradient_function = K.function([target_model.layers[0].input],[conv_output, grads])
 
@@ -105,7 +67,7 @@ def grad_cam(model, target_layer, image_path, preprocessing=None):
     heatmap = cam / np.max(cam)
 
     # load original image (pixcel value: [0..255])
-    origin_image = __load_image(image_path, image_size)
+    origin_image = util.load_image(image_path, image_size)
 
     # create cam
     cam = cv2.applyColorMap(np.uint8(255 * heatmap), cv2.COLORMAP_JET)
@@ -116,18 +78,23 @@ def grad_cam(model, target_layer, image_path, preprocessing=None):
 
 
 def exec(model, target_layers, image_paths, preprocessing=None):
+    # grad-cam for each layers and images
     results = []
-    tqdm_target_layers = tqdm(target_layers)
+    tqdm_target_layers = tqdm(target_layers, leave=False)
     for target_layer in tqdm_target_layers:
         tqdm_target_layers.set_description('LAYERS: %s' % target_layer)
         
         layer_results = []
-        tqdm_image_paths = tqdm(image_paths)
+        tqdm_image_paths = tqdm(image_paths, leave=False)
         for image_path in tqdm_image_paths:
             tqdm_image_paths.set_description('IMAGES: %s' % image_path)
             layer_results.append(
                 grad_cam(model, target_layer, image_path, preprocessing))
 
         results.append(layer_results)
+
+    # close tqdm
+    tqdm_image_paths.close()
+    tqdm_target_layers.close()
 
     return results
