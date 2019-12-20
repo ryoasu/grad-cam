@@ -94,7 +94,7 @@ You can load the model architecture from a `class` or `user-defined function` (p
 Specify the class name or user-defined function name in which source file and model are defined in config (yaml).
 
 ※ 
-`source code` and `architecutre file` can not be specified at the same time.
+`source code` and `architecture file` can not be specified at the same time.
 ```yaml
 keras:
   model:
